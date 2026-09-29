@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebView Wrapper</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    font-family: -apple-system, "PingFang SC", "Noto Sans CJK SC", Roboto, sans-serif;
+    background: #101418;
+    color: #e8edf2;
+    text-align: center;
+    padding: 24px;
+  }
+  .badge {
+    width: 88px; height: 88px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    box-shadow: 0 12px 32px rgba(59,130,246,.35);
+  }
+  h1 { margin: 0; font-size: 22px; letter-spacing: .5px; }
+  p  { margin: 0; color: #9aa7b4; font-size: 14px; line-height: 1.7; }
+  code {
+    background: rgba(255,255,255,.08);
+    padding: 2px 6px; border-radius: 5px;
+    font-size: 13px; color: #7dd3fc;
+  }
+</style>
+</head>
+<body>
+  <div class="badge">&#9881;</div>
+  <h1>WebView 包装器运行中</h1>
+  <p>
+    这个页面来自 APK 内的 <code>assets/index.html</code>，<br>
+    全程离线，没有申请网络权限。
+  </p>
+  <p id="js">JavaScript 未执行</p>
+  <script>
+    document.getElementById('js').textContent =
+      'JavaScript 已执行 · UA: ' + navigator.userAgent.slice(0, 60);
+  </script>
+</body>
+</html>

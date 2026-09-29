@@ -1,0 +1,65 @@
+name: Build Debug APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.9'
+
+      - name: Show Android SDK location
+        run: echo "ANDROID_HOME=$ANDROID_HOME" && echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" && ls "$ANDROID_HOME" || true
+
+      - name: Build Debug APK
+        run: gradle assembleDebug --no-daemon
+
+      - name: Verify APK exists
+        run: |
+          ls -la app/build/outputs/apk/debug/
+          test -f app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Package APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk \
+             "dist/webview-wrapper-${{ github.run_number }}.apk"
+          ls -la dist/
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: webview-wrapper-${{ github.run_number }}
+          path: dist/*.apk
+          if-no-files-found: error
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: webview-wrapper ${{ github.run_number }}
+          body: "Minimal offline WebView wrapper. Debug APK built by GitHub Actions (run ${{ github.run_number }})."
+          files: dist/*.apk
+          prerelease: true
